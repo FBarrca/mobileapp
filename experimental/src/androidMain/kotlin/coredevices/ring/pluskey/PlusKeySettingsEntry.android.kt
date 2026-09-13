@@ -35,6 +35,7 @@ actual fun PlusKeySettingsEntry() {
             Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(bottom = 28.dp)) {
                 Text("Oneplus integration", modifier = Modifier.padding(horizontal = 16.dp),
                     style = MaterialTheme.typography.headlineSmall, color = colors.onSurface)
+                coredevices.ring.pluskey.setup.WirelessKeySetup()
                 PlusKeyControls()
                 HorizontalDivider()
                 val endpoints by EndpointSelection.state.collectAsState()
@@ -78,7 +79,7 @@ private fun PlusKeyControls() {
     val enableKey = {
         error = null
         if (context.checkSelfPermission(Manifest.permission.READ_LOGS) != PackageManager.PERMISSION_GRANTED) {
-            error = "Key log access is missing. Grant the app READ_LOGS permission using ADB before enabling the key."
+            error = "Key permission is missing. Open Key setup above to grant it with wireless debugging."
         } else {
             runCatching {
                 config.update(config.config.value.copy(enableIndex = true))

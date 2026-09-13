@@ -6,7 +6,7 @@ Open Index settings > Oneplus integration. Configure LLM endpoint and Configure 
 
 ## OnePlus key
 
-Use Prepare Index, then Enable key while the app is visible. Preparation validates custom endpoints and loads local models only for services without a custom endpoint. Disable key cancels unfinished capture. The key notification opens the main Index app. After a process restart, repeat preparation and enablement. Microphone consent is requested when needed. Initial log permission requires ADB: adb shell pm grant --user 0 coredevices.coreapp.pluskey android.permission.READ_LOGS.
+Use Prepare Index, then Enable key while the app is visible. Preparation validates custom endpoints and loads local models only for services without a custom endpoint. Disable key cancels unfinished capture. The key notification opens the main Index app. After a process restart, repeat preparation and enablement. Microphone consent is requested when needed. As an alternative to Key setup, a computer can grant log permission with: adb shell pm grant --user 0 coredevices.coreapp.pluskey android.permission.READ_LOGS.
 
 The temporary standalone setup activity, extra launcher entry, duplicate endpoint activity and connection-test buttons have been removed. All user configuration lives in native Index settings.
 
@@ -27,3 +27,9 @@ Credentials use AES-GCM with Android Keystore in noBackupFilesDir. They are excl
 ## Validation
 
 Eight endpoint and six gesture host tests cover configuration migration, parsing and gestures. CustomEndpointsDeviceTest tests the full recording pipeline against tools/custom-endpoints-fixture.py via adb reverse tcp:8766 tcp:8766. The fixture checks speech upload, the separate cleanup request, and corrected text reaching the agent before a note tool call. Settings are restored afterward. Live configured cleanup and recording tests are opt-in using liveEndpoints=true; they incur provider requests. The live recording test additionally requires PCM16 mono 16kHz cache/endpoint-live-test.pcm.
+
+## Wireless key permission setup
+
+Open Index settings > Oneplus integration > Key setup. The guided flow matches DeskLink: enable Developer options and Wireless debugging on Wi-Fi, start pairing, open Pair device with pairing code, and enter the six digits through the Index setup notification while the Android dialog stays open. Return to Key setup and grant the permission. Then use Prepare Index and Enable key in Oneplus integration. Android settings and pairing prompts still require your interaction; no computer is needed on Android 11 or later.
+
+Setup requests notification permission (and local-network permission on Android 17+) when needed. If OxygenOS blocks the grant, follow the System optimization guidance in the wizard. Restore that setting and turn off Wireless debugging after setup. Setup pairs only with this phone and executes only the READ_LOGS grant for the running app package and Android user. Pairing credentials stay in private no-backup storage; codes are not persisted. Connections close after each action or timeout. Dependency license notices are packaged under assets/licenses/plus-key-setup.

@@ -44,7 +44,15 @@
         <!-- Tasker integration checks for/launches the Tasker app (package visibility, Android 11+). -->
         <package android:name="net.dinglisch.android.taskerm"/>
     </queries>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_LOCAL_NETWORK" />
     <application>
+        <service android:name="coredevices.ring.pluskey.setup.PlusKeyPairingService"
+            android:foregroundServiceType="specialUse" android:exported="false" android:stopWithTask="false">
+            <property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="User-initiated on-device wireless ADB discovery and pairing through notification while Android Settings is open; ends on completion or timeout." />
+        </service>
         <service android:name="coredevices.ring.pluskey.IndexPlusKeyService"
             android:exported="false" android:stopWithTask="false"
             android:foregroundServiceType="microphone" />

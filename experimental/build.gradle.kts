@@ -230,6 +230,9 @@ kotlin {
 
         androidMain {
             dependencies {
+                implementation("com.github.MuntashirAkon:libadb-android:3.1.1")
+                implementation("org.conscrypt:conscrypt-android:2.5.3")
+                implementation("org.bouncycastle:bcpkix-jdk15to18:1.81")
                 // gitlive's compile variant declares com.google.firebase:* without versions.
                 implementation(project.dependencies.platform(libs.firebase.bom))
                 implementation(libs.androidx.glance)
