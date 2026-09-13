@@ -1,3 +1,5 @@
+> **OnePlus / Index fork:** This fork adds phone Plus Key recording, custom STT and LLM endpoints, optional LLM transcript cleanup, phone-only onboarding, and on-phone wireless key setup. See [setup and build instructions](docs/oneplus-integration/README.md). Upstream documentation follows.
+
 # Pebble Mobile app
 
 Welcome to the official source code for the Pebble mobile app. Download the app from the [iOS Appstore](https://apps.apple.com/us/app/pebble-core/id6743771967) or [Google Play](https://play.google.com/store/apps/details?id=coredevices.coreapp&hl=en_US). The app is entirely open source. 

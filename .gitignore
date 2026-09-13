@@ -22,3 +22,8 @@ androidApp/src/main/assets/bundled-apps/
 iosApp/bundled-apps/*
 !iosApp/bundled-apps/.gitkeep
 .lock-waf_darwin_build
+
+# Local Index build outputs and initialization configuration
+/artifacts/
+**/.cxx/
+/androidApp/src/google-services.json
