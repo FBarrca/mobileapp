@@ -62,13 +62,13 @@ class IndexPlusKeyService : Service() {
         if (intent?.action == STOP) { stopSelf(); return START_NOT_STICKY }
         if (session != null) return START_NOT_STICKY
         if (!IndexPlusKeySetup.state.value.ready || IndexPlusKeySetup.state.value.busy) {
-            mutable.value = mutable.value.copy(message = "Open Index Plus Key and prepare the on-device models")
+            mutable.value = mutable.value.copy(message = "Open Index settings > Oneplus integration and prepare Index")
             stopSelf()
             return START_NOT_STICKY
         }
         if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED ||
             checkSelfPermission(Manifest.permission.READ_LOGS) != PackageManager.PERMISSION_GRANTED) {
-            mutable.value = mutable.value.copy(message = "Open Index Plus Key and finish permission setup")
+            mutable.value = mutable.value.copy(message = "Open Index settings > Oneplus integration and finish permission setup")
             stopSelf()
             return START_NOT_STICKY
         }
@@ -192,7 +192,7 @@ class IndexPlusKeyService : Service() {
     }
 
     private fun notification(message: String): Notification {
-        val open = PendingIntent.getActivity(this, 0, Intent(this, IndexPlusKeyActivity::class.java), PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
+        val open = PendingIntent.getActivity(this, 0, Intent(Intent.ACTION_VIEW, android.net.Uri.parse("pebble://navbar/index")).setClassName(packageName, "coredevices.coreapp.MainActivity"), PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
         val stop = PendingIntent.getService(this, 1, Intent(this, IndexPlusKeyService::class.java).setAction(STOP), PendingIntent.FLAG_IMMUTABLE)
         return NotificationCompat.Builder(this, CHANNEL).setSmallIcon(android.R.drawable.ic_btn_speak_now)
             .setContentTitle("Index Plus Key").setContentText(message).setContentIntent(open).setOngoing(true)

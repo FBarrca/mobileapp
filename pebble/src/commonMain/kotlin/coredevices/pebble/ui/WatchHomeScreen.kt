@@ -151,14 +151,17 @@ class WatchOnboardingFinished {
     val finished: Channel<Unit> = Channel<Unit>(capacity = 1)
 }
 
+const val PHONE_INDEX_START = "phone_index_start"
+
 class WatchHomeViewModel(
     coreConfig: CoreConfigFlow,
     libPebble: LibPebble,
     libIndex: LibIndex,
+    settings: Settings,
 ) : ViewModel() {
     val selectedTab = mutableStateOf(
         when {
-            coreConfig.value.enableIndex && libIndex.isAnyRingPaired() -> WatchHomeNavTab.Index
+            coreConfig.value.enableIndex && (settings.getBoolean(PHONE_INDEX_START, false) || libIndex.isAnyRingPaired()) -> WatchHomeNavTab.Index
             libPebble.haveSeenFullyConnectedWatch() -> WatchHomeNavTab.WatchFaces
             else -> WatchHomeNavTab.Watches
         }

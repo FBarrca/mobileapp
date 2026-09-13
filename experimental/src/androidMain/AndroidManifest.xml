@@ -45,17 +45,6 @@
         <package android:name="net.dinglisch.android.taskerm"/>
     </queries>
     <application>
-        <activity android:name="coredevices.ring.endpoints.CustomEndpointsActivity"
-            android:exported="false" android:label="Custom AI endpoints"
-            android:theme="@android:style/Theme.Material.Light.NoActionBar" />
-        <activity android:name="coredevices.ring.pluskey.IndexPlusKeyActivity"
-            android:exported="true" android:label="Index Plus Key"
-            android:theme="@android:style/Theme.Material.Light.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
         <service android:name="coredevices.ring.pluskey.IndexPlusKeyService"
             android:exported="false" android:stopWithTask="false"
             android:foregroundServiceType="microphone" />

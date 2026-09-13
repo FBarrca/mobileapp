@@ -1,6 +1,5 @@
 package coredevices.ring.endpoints
 
-import androidx.compose.runtime.Composable
 import kotlinx.serialization.Serializable
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -37,7 +36,6 @@ expect object CustomEndpoints {
     suspend fun speech(profile: EndpointProfile, wav: ByteArray, language: String?): String
 }
 
-@Composable expect fun CustomEndpointsSettingsEntry()
 
 /** The native endpoint form and Compose mode selectors share one persisted selection. */
 object EndpointSelection {

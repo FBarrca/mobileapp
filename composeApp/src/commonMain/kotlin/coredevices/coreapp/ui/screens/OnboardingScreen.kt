@@ -135,7 +135,16 @@ fun OnboardingScreen(
     }
 
     MaterialTheme(colorScheme = onboardingScheme) {
-    Scaffold { windowInsets ->
+    Scaffold(bottomBar = {
+        androidx.compose.material3.TextButton(
+            modifier = Modifier.fillMaxWidth().padding(16.dp),
+            onClick = {
+                viewModel.setIndexEnabled(true)
+                settings[coredevices.pebble.ui.PHONE_INDEX_START] = true
+                exitOnboarding()
+            },
+        ) { Text("Skip setup - use Index on this phone") }
+    }) { windowInsets ->
         Box(modifier = Modifier.padding(windowInsets).fillMaxSize()) {
             when (viewModel.stage.value) {
                 OnboardingStage.Welcome -> {

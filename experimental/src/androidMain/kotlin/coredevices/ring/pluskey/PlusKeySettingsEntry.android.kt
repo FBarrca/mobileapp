@@ -63,7 +63,6 @@ actual fun PlusKeySettingsEntry() {
                     CustomEndpointEditor(endpoints.speech, speech = true)
                 }
                 coredevices.ring.ui.screens.settings.TranscriptCleanupSettings()
-                coredevices.ring.endpoints.CustomEndpointsSettingsEntry()
             }
         }
     }
@@ -79,7 +78,7 @@ private fun PlusKeyControls() {
     val enableKey = {
         error = null
         if (context.checkSelfPermission(Manifest.permission.READ_LOGS) != PackageManager.PERMISSION_GRANTED) {
-            error = "Key permission is missing. Open permission setup below."
+            error = "Key log access is missing. Grant the app READ_LOGS permission using ADB before enabling the key."
         } else {
             runCatching {
                 config.update(config.config.value.copy(enableIndex = true))
@@ -111,8 +110,6 @@ private fun PlusKeyControls() {
             }) { Text(if (state.armed) "Disable key" else "Enable key") }
         }
         error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
-        TextButton(onClick = { context.startActivity(Intent(context, IndexPlusKeyActivity::class.java)) }) {
-            Text("Permission setup and help")
-        }
+
     }
 }
