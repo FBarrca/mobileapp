@@ -285,6 +285,7 @@ fun IndexSettings(coreNav: CoreNav) {
         LazyColumn(
             modifier = Modifier.padding(padding).fillMaxHeight()
         ) {
+            item { coredevices.ring.pluskey.PlusKeySettingsEntry() }
             // Getting Started guide + FAQ — Index 01 is a new kind of device,
             // so steer everyone to the guide. Opens in the system browser.
             item {

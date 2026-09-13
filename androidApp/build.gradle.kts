@@ -15,6 +15,13 @@ val properties = Properties().apply {
 }
 val localReleaseBuild = properties["LOCAL_RELEASE_BUILD"]?.toString()?.toBooleanStrictOrNull() ?: false
 
+// Git symlinks may be checked out as text files on Windows. Package the real model
+// in the application overlay instead of the library's symlink asset.
+val prepareIndexModelAssets = tasks.register<Sync>("prepareIndexModelAssets") {
+    from(rootProject.file("models")) { include("*.zip"); into("models") }
+    into(layout.buildDirectory.dir("generated/indexModelAssets"))
+}
+
 // Most recent tag reachable from HEAD, so a release branch versions from its own tag.
 val gitVersionName = providers.exec {
     isIgnoreExitValue = true
@@ -32,6 +39,7 @@ val gitVersionCode = gitVersionName.map { name ->
 
 android {
     namespace = "coredevices.coreapp"
+    sourceSets.getByName("main").assets.srcDir(layout.buildDirectory.dir("generated/indexModelAssets").get().asFile)
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     if (!localReleaseBuild) {
@@ -79,6 +87,7 @@ android {
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
         getByName("debug") {
+            applicationIdSuffix = ".pluskey"
             isMinifyEnabled = false
             isDebuggable = true
             configure<com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsExtension> {
@@ -189,4 +198,7 @@ tasks.register("buildTestAppPbws") {
 // The pbws ship in this app's assets, so anything reading that dir — asset merging, and lint's
 // model of the source sets — has to run after they land.
 tasks.matching { it.name.contains("Assets") || it.name.contains("lint", ignoreCase = true) }
-    .configureEach { dependsOn(testAppPbws) }
+    .configureEach {
+        dependsOn(testAppPbws)
+        if (name != "prepareIndexModelAssets") dependsOn(prepareIndexModelAssets)
+    }

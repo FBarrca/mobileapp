@@ -3,6 +3,9 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.READ_LOGS" tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
@@ -42,6 +45,17 @@
         <package android:name="net.dinglisch.android.taskerm"/>
     </queries>
     <application>
+        <activity android:name="coredevices.ring.pluskey.IndexPlusKeyActivity"
+            android:exported="true" android:label="Index Plus Key"
+            android:theme="@android:style/Theme.Material.Light.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <service android:name="coredevices.ring.pluskey.IndexPlusKeyService"
+            android:exported="false" android:stopWithTask="false"
+            android:foregroundServiceType="microphone" />
         <receiver android:name=".glance.VoiceWidgetReceiver"
                   android:exported="true"
                   android:enabled="false">

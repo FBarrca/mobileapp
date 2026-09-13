@@ -98,6 +98,10 @@ actual class CactusModelProvider actual constructor() : coredevices.util.transcr
 
         if (needsDownload) {
             downloadAndExtract(modelName, modelDir, version)
+            check(modelDir.resolve("config.txt").isFile &&
+                modelDir.walkTopDown().any { it.isFile && it.name.endsWith(".weights") && it.length() > 0 }) {
+                "Model archive for $modelName contains no usable configuration or weights"
+            }
             versionFile.writeText(version)
         }
 

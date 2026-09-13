@@ -1,0 +1,12 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools">
+    <!-- Legacy global declarations belong to the installed store app. -->
+    <permission android:name="io.rebble.pebblekit2.permission.SEND_DATA_TO_WATCH" tools:node="remove" />
+    <permission android:name="io.rebble.pebblekit2.permission.RECEIVE_DATA_FROM_WATCH" tools:node="remove" />
+    <permission android:name="io.rebble.pebblekit2.permission.READ_PROVIDER" tools:node="remove" />
+    <application android:label="Index Key for Pebble" tools:replace="android:label">
+        <provider android:name="io.rebble.libpebblecommon.pebblekit.two.PebbleKitProvider"
+            android:authorities="${applicationId}.pebblekit" tools:replace="android:authorities" />
+        <provider android:name="io.rebble.libpebblecommon.pebblekit.classic.PebbleKitProvider"
+            android:authorities="${applicationId}.provider.basalt" tools:replace="android:authorities" />
+    </application>
+</manifest>
