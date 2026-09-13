@@ -91,3 +91,9 @@ Ported DeskLink's guided wireless-debugging wizard, local ADB discovery, tempora
 Build and 24 host tests passed: 14 existing endpoint/gesture tests plus 10 setup input/address/tunnel tests, including current-package command validation, shell syntax rejection, stale/foreign discovery filtering and stalled-connection timeout. APK installed through ADB. Device UI verified Key setup and the existing-grant Ready screen. Fresh wireless pairing was not repeated because this installation already has READ_LOGS. No existing permission or provider credential was reset. Full patch reverse check passed; source whitespace check passed excluding verbatim upstream license whitespace.
 
 APK SHA256: E6F57FF1BE7909817D8AC215B7259F558DCABB99544902E2413DA028887C7D4E.
+
+## Standalone Pebble fork (2026-09-13)
+
+All Index source commits and this documentation now live in https://github.com/FBarrca/mobileapp on default branch codex/index-plus-key, with coredevices/mobileapp retained as upstream. Local checkout: C:/Users/Fran/GitHub/pebble-mobileapp. Index integration files were removed from DeskLink's current tree without altering its PC-audio work. The build helper now runs from this repository and accepts explicit SDK/JDK paths.
+
+Built successfully from the standalone checkout and passed all 24 focused tests. APK: artifacts/index-plus-key/Index-Plus-Key.apk, SHA256 2994FD3C70C03650153E1D0DA5EF3EC944C0059D4ECF22E9500E78A4B57AFF7B. SDKs and JDKs remain installed in the existing shared tools location. No API key or private Firebase initialization config was pushed. The prior APK and leftover local build caches were preserved under ignored artifacts.
