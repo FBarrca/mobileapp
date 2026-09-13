@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 import org.koin.mp.KoinPlatform
 
 internal object IndexPlusKeySetup {
-    data class State(val busy: Boolean = false, val message: String = "Tap Prepare to check the local models before enabling the key.", val ready: Boolean = false)
+    data class State(val busy: Boolean = false, val message: String = "Tap Prepare to check your selected services before enabling the key.", val ready: Boolean = false)
     private val mutable = MutableStateFlow(State())
     val state = mutable.asStateFlow()
 
@@ -26,15 +26,17 @@ internal object IndexPlusKeySetup {
         koin.get<LibIndexCoroutineScope>().launch(Dispatchers.IO) {
             try {
                 val models = koin.get<CactusModelProvider>()
-                models.getLMModelPath()
+                val endpoints = coredevices.ring.endpoints.CustomEndpoints.read()
+                endpoints.llm.validate(); endpoints.speech.validate()
+                if (!endpoints.llm.enabled) models.getLMModelPath()
                 mutable.value = State(true, "Downloading multilingual speech model. Keep the app open…")
                 val speechModel = CommonBuildKonfig.CACTUS_STT_MODEL
-                models.getSTTModelPath(speechModel, weightsVersionFor(speechModel))
+                if (!endpoints.speech.enabled) models.getSTTModelPath(speechModel, weightsVersionFor(speechModel))
                 koin.get<Preferences>().setLlmMode(LlmMode.LocalOnly)
                 val config = koin.get<CoreConfigHolder>()
                 config.update(config.config.value.copy(enableIndex = true,
                     sttConfig = config.config.value.sttConfig.copy(mode = CactusSTTMode.LocalOnly, modelName = speechModel)))
-                mutable.value = State(message = "On-device Index is ready. Speech and agent processing use this phone.", ready = true)
+                mutable.value = State(message = "Index is ready. LLM: ${if (endpoints.llm.enabled) endpoints.llm.model else "on-device"}. Speech: ${if (endpoints.speech.enabled) endpoints.speech.model else "on-device"}.", ready = true)
             } catch (e: Exception) {
                 mutable.value = State(message = "Model setup failed: ${e.message}. Tap Prepare to retry.")
             }

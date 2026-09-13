@@ -1,4 +1,6 @@
 package coredevices.ring.ui.screens.settings
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -129,6 +131,8 @@ internal fun spokenLanguageRowSubtitle(spokenLanguage: String?, selectable: Bool
 
 @Composable
 fun SpeechSection(
+    custom: coredevices.ring.endpoints.EndpointProfile? = null,
+    onSelectCustom: () -> Unit = {},
     mode: CactusSTTMode,
     spokenLanguage: String?,
     selectedModel: String?,
@@ -156,7 +160,7 @@ fun SpeechSection(
         value = modelManager.getSelectableSTTModels()
     }
     val currentModelInfo = selectableModels.firstOrNull { it.slug == currentModel }
-    val languageSelectable = spokenLanguageSelectable(mode, currentModelInfo)
+    val languageSelectable = custom?.enabled == true || spokenLanguageSelectable(mode, currentModelInfo)
     var deletions by remember { mutableStateOf(0) }
     val downloadedSlugs by produceState(emptyList<String>(), downloadStatus, deletions) {
         value = withContext(Dispatchers.Default) { modelManager.getDownloadedSTTModelSlugs() }
@@ -166,7 +170,7 @@ fun SpeechSection(
 
     SettingsRow(
         title = "Speech Engine",
-        subtitle = mode.speechEngineName(),
+        subtitle = if (custom?.enabled == true) "Custom endpoint · ${custom.model}" else mode.speechEngineName(),
         onClick = { showEngineSheet = true },
     )
     SettingsRow(
@@ -175,7 +179,7 @@ fun SpeechSection(
         enabled = languageSelectable,
         onClick = { showLanguageSheet = true },
     )
-    if (mode.needsLocalModel() && onDeviceSupported) {
+    if (custom?.enabled != true && mode.needsLocalModel() && onDeviceSupported) {
         SettingsRow(
             title = "Speech Model",
             subtitle = currentModel,
@@ -183,7 +187,7 @@ fun SpeechSection(
         )
     }
     val uriHandler = LocalUriHandler.current
-    Text(
+    if (custom?.enabled != true) Text(
         "Cloud speech recognition by Wispr Flow",
         fontSize = 12.sp,
         color = IndexTheme.colors.onSurfaceVariant,
@@ -195,6 +199,8 @@ fun SpeechSection(
     if (showEngineSheet) {
         SpeechEngineSheet(
             current = mode,
+            custom = custom,
+            onSelectCustom = onSelectCustom,
             onDeviceSupported = onDeviceSupported,
             platformSttAvailable = platformSttAvailable,
             hasOfflineModels = localModelReady,
@@ -282,6 +288,8 @@ fun SpeechSection(
 @Composable
 private fun SpeechEngineSheet(
     current: CactusSTTMode,
+    custom: coredevices.ring.endpoints.EndpointProfile?,
+    onSelectCustom: () -> Unit,
     onDeviceSupported: Boolean,
     platformSttAvailable: Boolean,
     hasOfflineModels: Boolean,
@@ -291,7 +299,7 @@ private fun SpeechEngineSheet(
 ) {
     val colors = IndexTheme.colors
     ModalBottomSheet(onDismissRequest = onDismiss, containerColor = colors.sheetSurface) {
-        Column(modifier = Modifier.padding(bottom = 28.dp)) {
+        Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(bottom = 28.dp)) {
             Column(modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 10.dp)) {
                 Text(
                     "Speech Engine",
@@ -305,10 +313,14 @@ private fun SpeechEngineSheet(
                     color = colors.onSurfaceVariant,
                 )
             }
+            custom?.let {
+                CustomEndpointChoice(it, onSelectCustom)
+                if (it.enabled) CustomEndpointEditor(it, speech = true)
+            }
             indexSpeechModes.filter {
                 it != CactusSTTMode.PlatformOnly || platformSttAvailable
             }.forEach { mode ->
-                val selected = mode == current
+                val selected = mode == current && custom?.enabled != true
                 val blocked = speechEngineBlockedReason(mode, onDeviceSupported)
                 val needsDownload = speechEngineNeedsDownload(
                     mode = mode,

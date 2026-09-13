@@ -29,6 +29,10 @@ class AgentFactory: KoinComponent {
         mode: ChatMode,
         existingConversation: List<ConversationMessageDocument> = emptyList()
     ): Agent {
+        val custom = coredevices.ring.endpoints.CustomEndpoints.read().llm
+        if (custom.enabled && (mode == ChatMode.Normal || mode is ChatMode.McpSandbox)) {
+            return coredevices.ring.endpoints.CustomEndpointAgent(custom, existingConversation)
+        }
         return when (mode) {
             ChatMode.Normal -> {
                 when (prefs.llmMode.value) {

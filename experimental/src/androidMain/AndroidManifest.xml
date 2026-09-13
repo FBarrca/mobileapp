@@ -45,6 +45,9 @@
         <package android:name="net.dinglisch.android.taskerm"/>
     </queries>
     <application>
+        <activity android:name="coredevices.ring.endpoints.CustomEndpointsActivity"
+            android:exported="false" android:label="Custom AI endpoints"
+            android:theme="@android:style/Theme.Material.Light.NoActionBar" />
         <activity android:name="coredevices.ring.pluskey.IndexPlusKeyActivity"
             android:exported="true" android:label="Index Plus Key"
             android:theme="@android:style/Theme.Material.Light.NoActionBar">

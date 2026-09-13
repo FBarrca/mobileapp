@@ -34,10 +34,13 @@ class IndexActionsRepository(
     private val calendarConnected: Flow<Boolean>,
     private val beeperUnavailable: Flow<String?>,
 ) {
+    private val effectiveMode = combine(llmMode, coredevices.ring.endpoints.EndpointSelection.state) { mode, endpoints ->
+        if (endpoints.llm.enabled) LlmMode.RemoteOnly else mode
+    }
     val actions: Flow<List<IndexAction>> =
         combine(
             defaultGroupEntries(),
-            llmMode,
+            effectiveMode,
             calendarConnected,
             beeperUnavailable,
         ) { entries, mode, calendar, beeper ->
@@ -50,7 +53,7 @@ class IndexActionsRepository(
 
     /** Non-null while the assistant model cannot talk to remote MCP servers at all. */
     val httpMcpDisabledReason: Flow<String?> =
-        llmMode.map { LOCAL_MODEL_MCP_REASON.takeIf { _ -> it == LlmMode.LocalOnly } }
+        effectiveMode.map { LOCAL_MODEL_MCP_REASON.takeIf { _ -> it == LlmMode.LocalOnly } }
 
     suspend fun setActionEnabled(name: String, enabled: Boolean) =
         setEnabledInDefaultGroup(name, enabled)

@@ -195,6 +195,7 @@ fun IndexSettings(coreNav: CoreNav) {
     var showBackupDialog by remember { mutableStateOf(false) }
     var showDiagnosticsDialog by remember { mutableStateOf(false) }
     var showLlmModeSheet by remember { mutableStateOf(false) }
+    val endpoints by coredevices.ring.endpoints.EndpointSelection.state.collectAsState()
     val availableNoteProviders by viewModel.availableNoteProviders.collectAsState()
     val availableReminderProviders by viewModel.availableReminderProviders.collectAsState()
 
@@ -212,8 +213,13 @@ fun IndexSettings(coreNav: CoreNav) {
     if (showLlmModeSheet) {
         LlmModeSheet(
             current = llmMode,
+            custom = endpoints.llm.takeIf { platform.isAndroid },
+            onSelectCustom = {
+                coredevices.ring.endpoints.EndpointSelection.selectLlm(true)
+            },
             localSupported = localLlmSupported,
             onSelect = {
+                if (platform.isAndroid) coredevices.ring.endpoints.EndpointSelection.selectLlm(false)
                 viewModel.setLlmMode(it)
                 showLlmModeSheet = false
             },
@@ -286,6 +292,7 @@ fun IndexSettings(coreNav: CoreNav) {
             modifier = Modifier.padding(padding).fillMaxHeight()
         ) {
             item { coredevices.ring.pluskey.PlusKeySettingsEntry() }
+
             // Getting Started guide + FAQ — Index 01 is a new kind of device,
             // so steer everyone to the guide. Opens in the system browser.
             item {
@@ -379,7 +386,7 @@ fun IndexSettings(coreNav: CoreNav) {
             item {
                 SettingsRow(
                     title = "Agent Model",
-                    subtitle = llmModeRowSubtitle(llmMode),
+                    subtitle = if (endpoints.llm.enabled) "Custom endpoint · ${endpoints.llm.model}" else llmModeRowSubtitle(llmMode),
                     onClick = { showLlmModeSheet = true },
                 ) {
                     Icon(
@@ -398,6 +405,8 @@ fun IndexSettings(coreNav: CoreNav) {
             }
             item {
                 SpeechSection(
+                    custom = endpoints.speech.takeIf { platform.isAndroid },
+                    onSelectCustom = { coredevices.ring.endpoints.EndpointSelection.selectSpeech(true) },
                     mode = coreConfig.sttConfig.mode,
                     spokenLanguage = coreConfig.sttConfig.spokenLanguage,
                     selectedModel = selectedSttModel,
@@ -406,6 +415,7 @@ fun IndexSettings(coreNav: CoreNav) {
                     hasOfflineModels = hasOfflineSpeechModels,
                     signedIn = accountUsername != null,
                     onSelectMode = { mode ->
+                        if (platform.isAndroid) coredevices.ring.endpoints.EndpointSelection.selectSpeech(false)
                         coreConfigHolder.update(
                             coreConfig.copy(sttConfig = coreConfig.sttConfig.copy(mode = mode))
                         )
@@ -421,6 +431,7 @@ fun IndexSettings(coreNav: CoreNav) {
                         }
                     },
                     onSelectModeWithModel = { mode, modelSlug ->
+                        if (platform.isAndroid) coredevices.ring.endpoints.EndpointSelection.selectSpeech(false)
                         coreConfigHolder.update(
                             coreConfig.copy(
                                 sttConfig = coreConfig.sttConfig.copy(
@@ -638,13 +649,15 @@ internal fun llmModeRowSubtitle(mode: LlmMode): String =
 @Composable
 private fun LlmModeSheet(
     current: LlmMode,
+    custom: coredevices.ring.endpoints.EndpointProfile?,
+    onSelectCustom: () -> Unit,
     localSupported: Boolean,
     onSelect: (LlmMode) -> Unit,
     onDismiss: () -> Unit,
 ) {
     val colors = IndexTheme.colors
     ModalBottomSheet(onDismissRequest = onDismiss, containerColor = colors.sheetSurface) {
-        Column(modifier = Modifier.padding(bottom = 28.dp)) {
+        Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(bottom = 28.dp)) {
             Column(modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 10.dp)) {
                 Text(
                     "Agent Model",
@@ -658,8 +671,12 @@ private fun LlmModeSheet(
                     color = colors.onSurfaceVariant,
                 )
             }
+            custom?.let {
+                CustomEndpointChoice(it, onSelectCustom)
+                if (it.enabled) CustomEndpointEditor(it, speech = false)
+            }
             llmModeOptions.forEach { mode ->
-                val selected = mode == current
+                val selected = mode == current && custom?.enabled != true
                 val selectable = llmModeSelectable(mode, localSupported)
                 Row(
                     modifier = Modifier

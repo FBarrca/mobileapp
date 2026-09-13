@@ -117,7 +117,9 @@ class RecordingProcessor(
         language: STTLanguage,
         encoding: AudioEncoding,
         dictionaryContext: List<String>? = null,
-    ) = transcriptionService.transcribe(
+    ) = (coredevices.ring.endpoints.CustomEndpoints.read().speech.let {
+        if (it.enabled) coredevices.ring.endpoints.CustomSpeechService(it) else transcriptionService
+    }).transcribe(
         audioStreamFlow,
         sampleRate,
         language = language,

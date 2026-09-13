@@ -38,11 +38,16 @@ class IndexPlusKeyActivity : Activity(), KoinComponent {
         stateLabel = text("")
         setupLabel = text("")
         Button(this).apply {
-            text = "Prepare on-device Index"
+            text = "Prepare Index"
             setOnClickListener { IndexPlusKeySetup.prepareLocal() }
             layout.addView(this)
         }
-        text("Downloads the speech model and uses Index's on-device agent. No online account is needed for local processing. Use Wi-Fi for model setup.", 14f)
+        text("Checks your endpoint settings and prepares local models for any service without a custom endpoint. No Pebble login is needed. Test endpoint connections in Custom AI endpoints.", 14f)
+        Button(this).apply {
+            text = "Custom AI endpoints"
+            setOnClickListener { startActivity(Intent(this@IndexPlusKeyActivity, coredevices.ring.endpoints.CustomEndpointsActivity::class.java)) }
+            layout.addView(this)
+        }
         enable = Button(this).apply {
             text = "Enable Index key"
             setOnClickListener {
